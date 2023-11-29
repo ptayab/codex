@@ -1,0 +1,16 @@
+.landing-container {
+  display: flex;
+}
+
+.left-side {
+  flex: 2; 
+  padding: 200px;
+  background-color: rgb(74, 123, 169);
+}
+
+.right-side {
+  flex: 1; 
+  padding: 10px;
+  background-color: rgb(74, 142, 169);
+}
+
