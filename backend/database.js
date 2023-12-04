@@ -45,7 +45,6 @@ db.connect((err) => {
             console.log('Table "users" created or already exists');
         }
     });
-    });
 
     // create the channels table
         db.query(`
@@ -78,6 +77,48 @@ db.connect((err) => {
     } else {
         console.log('Table "posts" created or already exists');
     }
+    });
+
+
+    // create comments table
+    db.query(`
+    CREATE TABLE IF NOT EXISTS comments (
+        id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        comment TEXT NOT NULL,
+        likes int,
+        dislikes int,
+        user_id int NOT NULL,
+        post_id int NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (post_id) REFERENCES posts(id)
+    )
+`, (err) => {
+    if (err) {
+        console.log('Error creating comments table:', err.message);
+    } else {
+        console.log('Table "comments" created or already exists');
+    }
+    });
+
+    // create replies table
+    db.query(`
+    CREATE TABLE IF NOT EXISTS replies (
+        id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        reply TEXT NOT NULL,
+        likes int,
+        dislikes int,
+        user_id int NOT NULL,
+        comment_id int NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (comment_id) REFERENCES comments(id)
+    )
+`, (err) => {
+    if (err) {
+        console.log('Error creating replies table:', err.message);
+    } else {
+        console.log('Table "replies" created or already exists');
+    }
+    });
 });
 });
 

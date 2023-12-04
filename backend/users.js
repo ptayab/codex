@@ -22,6 +22,18 @@ router.get('/', (req, res) => {
     });
 });
 
+// Fetch a user by ID
+router.get('/:userId', (req, res) => {
+    const { userId } = req.params;
+    db.query('SELECT * FROM users WHERE id = ?', [userId], (err, user) => {
+        if (err) {
+            console.error('Error fetching user:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json(user);
+    });
+});
+
 // Register a new user
 router.post('/signup', (req, res) => {
     const { username, email, password } = req.body;

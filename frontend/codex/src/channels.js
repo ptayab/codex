@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 function Channels() {
     const [channels, setChannels] = useState([]);
@@ -7,6 +8,7 @@ function Channels() {
     const [posts, setPosts] = useState([]);
     const [postText, setPostText] = useState("");
     const [postImages, setPostImages] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         getChannels();
@@ -37,8 +39,6 @@ function Channels() {
         try {
             const response = await fetch(`http://localhost:5000/channels/${channelId}/posts`);
             const jsonData = await response.json();
-
-            console.log('Posts data:', jsonData); // Log the received data
 
             // Update the posts state with the fetched data
             setPosts(jsonData);
@@ -118,6 +118,12 @@ function Channels() {
         setSelectedChannel(channel);
     };
 
+    const handlePostClick = (postId) => {
+        // Navigate to the post page using React Router
+    
+        navigate(`/posts/${postId}`);
+    };
+
     return (
         <div style={{ display: "flex" }}>
             {/* Left side - List of channels */}
@@ -158,7 +164,9 @@ function Channels() {
                         </div>
                         <ul>
                             {posts && posts.map(post => (
-                                <li key={post.id}>{post.post}</li>
+                                <li key={post.id} onClick={() => handlePostClick(post.id)}>
+                                {post.post}
+                            </li>
                             ))}
                         </ul>
                     </div>

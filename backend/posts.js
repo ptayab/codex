@@ -15,6 +15,17 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:postId', (req, res) => {
+    const { postId } = req.params;
+    db.query('SELECT * FROM posts WHERE id = ?', [postId], (err, results) => {
+        if (err) {
+            console.log('Error fetching posts:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json(results[0]);
+    });
+});
+
 router.post('/', upload.array('images', 5), (req, res) => {
     const { post, user_id, channel_id } = req.body;
     const images = req.files ? req.files.map(file => file.buffer.toString('base64')) : [];
