@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 function Channels() {
     const [channels, setChannels] = useState([]);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [selectedChannel, setSelectedChannel] = useState(null);
     const [posts, setPosts] = useState([]);
     const [postText, setPostText] = useState("");
@@ -53,10 +54,12 @@ function Channels() {
                 console.error('Post text cannot be empty');
                 return;
             }
+
+            
     
             const formData = new FormData();
             formData.append("post", postText);
-            formData.append("user_id",2 /* Provide the user_id here */);
+            formData.append("user_id", user.userId);
             formData.append("channel_id", selectedChannel.id);
             
             // Append each selected image file to the form data
