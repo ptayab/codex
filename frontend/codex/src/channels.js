@@ -54,14 +54,12 @@ function Channels() {
                 console.error('Post text cannot be empty');
                 return;
             }
-
-            
     
             const formData = new FormData();
             formData.append("post", postText);
             formData.append("user_id", user.userId);
             formData.append("channel_id", selectedChannel.id);
-            
+    
             // Append each selected image file to the form data
             for (let i = 0; i < postImages.length; i++) {
                 formData.append("images", postImages[i]);
@@ -80,9 +78,13 @@ function Channels() {
                 setPostImages([]);
             } else {
                 console.error('Error creating post:', response.statusText);
+                // Provide user feedback on error
+                alert('Error creating post. Please try again.');
             }
         } catch (error) {
             console.error('Error:', error.message);
+            // Provide user feedback on error
+            alert('Error creating post. Please try again.');
         }
     };
     
@@ -124,6 +126,8 @@ function Channels() {
         navigate(`/posts/${postId}`);
     };
 
+
+
     return (
         <div style={{ display: "flex" }}>
             {/* Left side - List of channels */}
@@ -133,7 +137,7 @@ function Channels() {
                     Create Channel
                 </button>
                 <ul>
-                    {channels.map(channel => (
+                    {channels.map((channel) => (
                         <li key={channel.id} onClick={() => handleChannelClick(channel)}>
                             {channel.name}
                         </li>
@@ -148,11 +152,11 @@ function Channels() {
                     <div>
                         <h2>{selectedChannel.name} Posts</h2>
                         <div>
-                            <input
-                                type="text"
+                            <textarea
                                 placeholder="Enter post text"
                                 value={postText}
                                 onChange={(e) => setPostText(e.target.value)}
+                                style={{ width: "80%", minHeight: "100px", resize: "vertical" }} // Adjust the size as needed
                             />
                             <input
                                 type="file"
@@ -160,14 +164,35 @@ function Channels() {
                                 multiple
                                 onChange={(e) => setPostImages(e.target.files)}
                             />
-                            <button type="button" onClick={handleCreatePostClick}>Create Post</button>
+                            {/* Display selected images */}
+                            {postImages.length > 0 && (
+                                <div>
+                                    <h3>Selected Images:</h3>
+                                    <ul>
+                                        {Array.from(postImages).map((image, index) => (
+                                            <li key={index}>
+                                                <p>{image.name}</p>
+                                                <img
+                                                    src={URL.createObjectURL(image)}
+                                                    alt={`Selected Image ${index + 1}`}
+                                                    style={{ maxWidth: "100px", maxHeight: "100px", marginRight: "10px" }}
+                                                />
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                            <button type="button" onClick={handleCreatePostClick}>
+                                Create Post
+                            </button>
                         </div>
                         <ul>
-                            {posts && posts.map(post => (
-                                <li key={post.id} onClick={() => handlePostClick(post.id)}>
-                                {post.post}
-                            </li>
-                            ))}
+                            {posts &&
+                                posts.map((post) => (
+                                    <li key={post.id} onClick={() => handlePostClick(post.id)}>
+                                        <p>{post.post}</p>
+                                    </li>
+                                ))}
                         </ul>
                     </div>
                 )}
