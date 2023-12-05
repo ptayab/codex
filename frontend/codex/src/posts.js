@@ -35,6 +35,17 @@ function Posts() {
         const storedDislikedComments = JSON.parse(localStorage.getItem('dislikedComments')) || [];
         return storedDislikedComments;
     });
+    const [likedReplies, setLikedReplies] = useState(() => {
+        // Initialize likedReplies from localStorage or an empty array if not present
+        const storedLikedReplies = JSON.parse(localStorage.getItem('likedReplies')) || [];
+        return storedLikedReplies;
+    });
+    const [dislikedReplies, setDislikedReplies] = useState(() => {
+        // Initialize dislikedReplies from localStorage or an empty array if not present
+        const storedDislikedReplies = JSON.parse(localStorage.getItem('dislikedReplies')) || [];
+        return storedDislikedReplies;
+    });
+
 
 
     useEffect(() => {
@@ -144,6 +155,9 @@ function Posts() {
     const likePost = async () => {
         // Implement the logic to send a request to like the post
         try {
+            console.log('likedPosts', likedPosts);
+            console.log('likes', post.likes);
+            console.log('user.userId', user.userId)
             if (!likedPosts.includes(post.id)) {
                 const response = await fetch(`http://localhost:5000/posts/like/${post.id}`, {
                     method: 'POST',
@@ -156,6 +170,7 @@ function Posts() {
                 });
 
                 if (response.ok) {
+                    console.log('Liked post', post.id);
                     // Update likedPosts state and localStorage
                     const updatedLikedPosts = [...likedPosts, post.id];
                     setLikedPosts(updatedLikedPosts);
@@ -163,6 +178,7 @@ function Posts() {
 
                     // Increment the like count in the post state
                     setPost((prevPost) => ({ ...prevPost, likes: prevPost.likes + 1 }));
+                    console.log('current post in like post', post)
                 } else {
                     console.error('Failed to like comment');
                 }
@@ -172,6 +188,7 @@ function Posts() {
         } catch (error) {
             console.error(error.message);
         }
+
     };
 
     // Function to handle disliking the post
@@ -359,8 +376,85 @@ function Posts() {
         }
     };
 
-    console.log('repliesFinal', replies);
-    // console.log('showreplieswithRepliers', replyingTo);
+    // function to handle liking a reply
+    const likeReply = async (replyId) => {
+        try {
+            if (!likedReplies.includes(replyId)) {
+                const response = await fetch(`http://localhost:5000/replies/like/${replyId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update likedReplies state and localStorage
+                    const updatedLikedReplies = [...likedReplies, replyId];
+                    setLikedReplies(updatedLikedReplies);
+                    localStorage.setItem('likedReplies', JSON.stringify(updatedLikedReplies));
+
+                    // Increment the like count in the replies state
+                    setReplies((prevReplies) =>
+                        prevReplies.map((prevReply) =>
+                            prevReply.id === replyId
+                                ? { ...prevReply, likes: prevReply.likes + 1 }
+                                : prevReply
+                        )
+                    );
+                } else {
+                    console.error('Failed to like reply');
+                }
+            } else {
+                console.log('Reply already liked by the user.');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+    // Function to handle disliking a reply
+    const dislikeReply = async (replyId) => {
+        try {
+            if (!dislikedReplies.includes(replyId)) {
+                const response = await fetch(`http://localhost:5000/replies/dislike/${replyId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update dislikedReplies state and localStorage
+                    const updatedDislikedReplies = [...dislikedReplies, replyId];
+                    setDislikedReplies(updatedDislikedReplies);
+                    localStorage.setItem('dislikedReplies', JSON.stringify(updatedDislikedReplies));
+
+                    // Increment the dislike count in the replies state
+                    setReplies((prevReplies) =>
+                        prevReplies.map((prevReply) =>
+                            prevReply.id === replyId
+                                ? { ...prevReply, dislikes: prevReply.dislikes + 1 }
+                                : prevReply
+                        )
+                    );
+                } else {
+                    console.error('Failed to dislike reply');
+                }
+            } else {
+                console.log('Reply already disliked by the user.');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+
 
     return (
         <div>
@@ -382,20 +476,29 @@ function Posts() {
     
           {/* Like and Dislike buttons */}
           <div>
-            {likedPosts.includes(post.id) ? (
-                <button style={{ color: "blue" }}>Liked</button>
-            ) : (
-              <button onClick={likePost}>Like</button>
-            )}
-            <span> Likes: {post.likes} </span>
+  {likedPosts.includes(post?.id) ? (
+    <button style={{ color: 'blue' }}>
+      👍 Liked
+    </button>
+  ) : (
+    <button onClick={likePost}>
+      👍 Like
+    </button>
+  )}
+  <span>Likes: {post?.likes || 0} </span>
 
-            {dislikedPosts.includes(post.id) ? (
-                <button style={{ color: "blue" }}>Disliked</button>
-            ) : (
-              <button onClick={dislikePost}>Dislike</button>
-            )}
-            <span>Dislikes: {post.dislikes} </span>
-          </div>
+  {dislikedPosts.includes(post?.id) ? (
+    <button style={{ color: 'blue' }}>
+      👎 Disliked
+    </button>
+  ) : (
+    <button onClick={dislikePost}>
+      👎 Dislike
+    </button>
+  )}
+  <span>Dislikes: {post?.dislikes || 0} </span>
+</div>
+
     
           {/* Comment section */}
           <div>
@@ -407,16 +510,16 @@ function Posts() {
                   <div>
 
                     {likedComments.includes(comment.id) ? (
-                        <button style={{ color: 'blue' }}>Liked</button>
+                        <button style={{ color: 'blue' }}>👍 Liked</button>
                     ) : (
-                        <button onClick={() => likeComment(comment.id)}>Like</button>
+                        <button onClick={() => likeComment(comment.id)}>👍Like</button>
                     )}
                     <span>Likes: {comment.likes}</span>
 
                     {dislikedComments.includes(comment.id) ? (
-                        <button style={{ color: 'blue' }}>Disliked</button>
+                        <button style={{ color: 'blue' }}>👎 Disliked</button>
                     ) : (
-                        <button onClick={() => dislikeComment(comment.id)}>Dislike</button>
+                        <button onClick={() => dislikeComment(comment.id)}>👎 Dislike</button>
                     )}
                     <span>Dislikes: {comment.dislikes}</span>
 
@@ -428,6 +531,21 @@ function Posts() {
                 {replies.map(reply => (
                     <div key={reply.id}>
                         <strong>{reply.replier}:</strong> {reply.reply}
+                        <div>
+                            {likedReplies.includes(reply.id) ? (
+                                <button style={{ color: 'blue' }}>👍 Liked</button>
+                            ) : (
+                                <button onClick={() => likeReply(reply.id)}>👍 Like</button>
+                            )}
+                            <span>Likes: {reply.likes}</span>
+
+                            {dislikedReplies.includes(reply.id) ? (
+                                <button style={{ color: 'blue' }}>👎 Disliked</button>
+                            ) : (
+                                <button onClick={() => dislikeReply(reply.id)}>👎 Dislike</button>
+                            )}
+                            <span>Dislikes: {reply.dislikes}</span>
+                            </div>
                     </div>
                 ))}
             </div>
