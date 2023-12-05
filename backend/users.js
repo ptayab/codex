@@ -104,4 +104,15 @@ router.post('/login', (req, res) => {
     });
 });
 
+router.delete('/:userId', (req, res) => {
+    const { userId } = req.params;
+    db.query('DELETE FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error deleting user:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'User deleted successfully' });
+    });
+});
+
 module.exports = router;

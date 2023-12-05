@@ -42,4 +42,15 @@ router.post('/', upload.array('images', 5), (req, res) => {
     });
 });
 
+router.delete('/:postId', (req, res) => {
+    const { postId } = req.params;
+    db.query('DELETE FROM posts WHERE id = ?', [postId], (err, results) => {
+        if (err) {
+            console.log('Error deleting post:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'Post deleted successfully' });
+    });
+});
+
 module.exports = router;

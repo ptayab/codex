@@ -40,5 +40,16 @@ router.post('/', (req, res) => {
     });
 });
 
+router.delete('/:commentId', (req, res) => {
+    const { commentId } = req.params;
+    db.query('DELETE FROM comments WHERE id = ?', [commentId], (err, results) => {
+        if (err) {
+            console.log('Error deleting comment:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'Comment deleted successfully' });
+    });
+});
+
 
 module.exports = router;

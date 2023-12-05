@@ -35,4 +35,15 @@ router.post('/', (req, res) => {
     });
 });
 
+router.delete('/:channelId', (req, res) => {
+    const { channelId } = req.params;
+    db.query('DELETE FROM channels WHERE id = ?', [channelId], (err, results) => {
+        if (err) {
+            console.log('Error deleting channel:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'Channel deleted successfully' });
+    });
+});
+
 module.exports = router;

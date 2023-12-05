@@ -36,8 +36,10 @@ db.connect((err) => {
             id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
             username varchar(255) NOT NULL,
             email varchar(255) NOT NULL,
-            password varchar(255) NOT NULL
+            password varchar(255) NOT NULL,
+            isAdmin BOOLEAN DEFAULT false
         )
+        
     `, (err) => {
         if (err) {
             console.log('Error creating users table:', err.message);
@@ -119,7 +121,21 @@ db.connect((err) => {
         console.log('Table "replies" created or already exists');
     }
     });
+
+    // create admin account
+    db.query(`
+    INSERT INTO users (username, email, password, isAdmin) VALUES
+    ("admin", "admin@email.com", "admin123", true)
+`, (err) => {
+    if (err) {
+        console.log('Error inserting admin user:', err.message);
+    } else {
+        console.log('Admin user inserted');
+    }
+    });
 });
+
+
 });
 
 
