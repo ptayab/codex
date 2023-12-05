@@ -10,7 +10,7 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.log('Error connecting to the database');
+        console.log('Error connecting to the database'); 
         return;
     }
     console.log('Connected to the database');
@@ -185,7 +185,7 @@ db.connect((err) => {
         FOREIGN KEY (user_id) REFERENCES users(id),
         FOREIGN KEY (reply_id) REFERENCES replies(id)
     )
-`, (err) => {
+`, (err) => {  
     if (err) {
         console.log('Error creating replydislikes table:', err.message);
     } else {
@@ -228,7 +228,7 @@ db.connect((err) => {
     }
     });
 });
-
+    
 });
 
 

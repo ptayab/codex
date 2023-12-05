@@ -26,6 +26,7 @@ router.get('/:postId', (req, res) => {
     });
 });
 
+
 router.post('/', upload.array('images', 5), (req, res) => {
     const { post, user_id, channel_id } = req.body;
     const images = req.files ? req.files.map(file => file.buffer.toString('base64')) : [];
