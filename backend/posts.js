@@ -50,6 +50,10 @@ router.delete('/:postId', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
         return res.status(200).json({ message: 'Post deleted successfully' });
+    });
+});
+
+
 router.post('/like/:postId', (req, res) => {
     const { postId } = req.params;
     const { user_id } = req.body;
