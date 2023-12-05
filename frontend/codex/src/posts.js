@@ -8,18 +8,40 @@ function Posts() {
     const [username, setUsername] = useState(null);
     const [user, setUser] = useState(JSON.parse(localStorage.getItem('user')));
     const [commentText, setCommentText] = useState("");
+    const [replyText, setReplyText] = useState("");
     const [likes, setLikes] = useState(0);
     const [dislikes, setDislikes] = useState(0);
     const [commenter, setCommenter] = useState(null);
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [showReplies, setShowReplies] = useState(false);
+    const [replies, setReplies] = useState([]);
+    const [likedPosts, setLikedPosts] = useState(() => {
+        // Initialize likedPosts from localStorage or an empty array if not present
+        const storedLikedPosts = JSON.parse(localStorage.getItem('likedPosts')) || [];
+        return storedLikedPosts;
+    });
+    const [dislikedPosts, setDislikedPosts] = useState(() => {
+        // Initialize dislikedPosts from localStorage or an empty array if not present
+        const storedDislikedPosts = JSON.parse(localStorage.getItem('dislikedPosts')) || [];
+        return storedDislikedPosts;
+    });
+    const [likedComments, setLikedComments] = useState(() => {
+        // Initialize likedComments from localStorage or an empty array if not present
+        const storedLikedComments = JSON.parse(localStorage.getItem('likedComments')) || [];
+        return storedLikedComments;
+    });
+    const [dislikedComments, setDislikedComments] = useState(() => {
+        // Initialize dislikedComments from localStorage or an empty array if not present
+        const storedDislikedComments = JSON.parse(localStorage.getItem('dislikedComments')) || [];
+        return storedDislikedComments;
+    });
+
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const response = await fetch(`http://localhost:5000/posts/${postId}`);
                 const postData = await response.json();
-
-                console.log('Post ID:', postId);
-                console.log('Post data:', postData);
 
                 setPost(postData);
 
@@ -43,13 +65,14 @@ function Posts() {
         }
     }, [post]);
 
+
+    
+
     const getUsername = async (userId) => {
         try {
             const response = await fetch(`http://localhost:5000/users/${userId}`);
             const userData = await response.json();
 
-            console.log('User ID:', userId);
-            console.log('User data:', userData[0].username);
 
             setUsername(userData[0].username);
         } catch (error) {
@@ -82,7 +105,6 @@ function Posts() {
                 })
             );
 
-            console.log('Comments data:', commentsWithCommenters);
             setComments(commentsWithCommenters);
         } catch (error) {
             console.error(error.message);
@@ -92,9 +114,6 @@ function Posts() {
     // Function to handle posting a comment
     const postComment = async () => {
         try {
-            console.log('user.userId:', user.userId);
-            console.log('commentText:', commentText);
-            console.log('post.id:', post.id);
 
             const response = await fetch(`http://localhost:5000/comments`, {
                 method: 'POST',
@@ -124,49 +143,318 @@ function Posts() {
     // Function to handle liking the post
     const likePost = async () => {
         // Implement the logic to send a request to like the post
+        try {
+            if (!likedPosts.includes(post.id)) {
+                const response = await fetch(`http://localhost:5000/posts/like/${post.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update likedPosts state and localStorage
+                    const updatedLikedPosts = [...likedPosts, post.id];
+                    setLikedPosts(updatedLikedPosts);
+                    localStorage.setItem('likedPosts', JSON.stringify(updatedLikedPosts));
+
+                    // Increment the like count in the post state
+                    setPost((prevPost) => ({ ...prevPost, likes: prevPost.likes + 1 }));
+                } else {
+                    console.error('Failed to like comment');
+                }
+            } else {
+                console.log('Comment already liked by the user.');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
     };
 
     // Function to handle disliking the post
     const dislikePost = async () => {
-        // Implement the logic to send a request to dislike the post
+        try {
+            if (!dislikedPosts.includes(post.id)) {
+                const response = await fetch(`http://localhost:5000/posts/dislike/${post.id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update dislikedPosts state and localStorage
+                    const updatedDislikedPosts = [...dislikedPosts, post.id];
+                    setDislikedPosts(updatedDislikedPosts);
+                    localStorage.setItem('dislikedPosts', JSON.stringify(updatedDislikedPosts));
+
+                    // Increment the dislike count in the post state
+                    setPost((prevPost) => ({ ...prevPost, dislikes: prevPost.dislikes + 1 }));
+                } else {
+                    console.error('Failed to dislike comment');
+                }
+            } else {
+                console.log('Comment already disliked by the user.');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
     };
+
+    // Function to handle liking a comment
+    const likeComment = async (commentId) => {
+        try {
+            if (!likedComments.includes(commentId)) {
+                const response = await fetch(`http://localhost:5000/comments/like/${commentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update likedComments state and localStorage
+                    const updatedLikedComments = [...likedComments, commentId];
+                    setLikedComments(updatedLikedComments);
+                    localStorage.setItem('likedComments', JSON.stringify(updatedLikedComments));
+
+                    // Increment the like count in the comments state
+                    setComments((prevComments) =>
+                        prevComments.map((prevComment) =>
+                            prevComment.id === commentId
+                                ? { ...prevComment, likes: prevComment.likes + 1 }
+                                : prevComment
+                        )
+                    );
+                } else {
+                    console.error('Failed to like comment');
+                }
+            } else {
+                console.log('Comment already liked by the user.');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+      
+    // Function to handle disliking a comment
+    const dislikeComment = async (commentId) => {
+        try {
+            if (!likedComments.includes(commentId)) {
+                const response = await fetch(`http://localhost:5000/comments/dislike/${commentId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: user.userId,
+                    }),
+                });
+
+                if (response.ok) {
+                    // Update dislikedComments state and localStorage
+                    const updatedDislikedComments = [...dislikedComments, commentId];
+                    setDislikedComments(updatedDislikedComments);
+                    localStorage.setItem('dislikedComments', JSON.stringify(updatedDislikedComments));
+
+                    // Increment the dislike count in the comments state
+                    setComments((prevComments) =>
+                        prevComments.map((prevComment) =>
+                            prevComment.id === commentId
+                                ? { ...prevComment, dislikes: prevComment.dislikes + 1 }
+                                : prevComment
+                        )
+                    );
+                } else {
+                    console.error('Failed to dislike comment');
+                }
+            }
+        }
+        catch (error) {
+            console.error(error.message);
+        }
+    };
+
+
+
+    const toggleReplies = async (commentId) => {
+
+        // Toggle showReplies and set replyingTo to the commentId
+        setShowReplies((prevShowReplies) => !prevShowReplies);
+        setReplyingTo(commentId);
+
+        try {
+            // Fetch replies for the selected comment
+            await getReplies(commentId);
+
+
+            console.log('replies', replies);
+        } catch (error) {
+            console.error(error.message);
+        }
+
+
+
+    };
+
+    // Function to handle posting a reply
+    const postReply = async () => {
+        try {
+
+            const response = await fetch(`http://localhost:5000/replies`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user.userId,
+                    reply: replyText,
+                    comment_id: replyingTo, // Set comment_id for replies
+                }),
+            });
+
+            if (response.ok) {
+                // Refresh comments after posting
+                getComments(post.id);
+                // Clear the comment text input and reset replyingTo
+                setReplyText("");
+                setReplyingTo(null);
+            } else {
+                console.error('Failed to post reply');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+    const getReplies = async (commentId) => {
+        try {
+            const response = await fetch(`http://localhost:5000/replies/${commentId}`);
+            const repliesData = await response.json();
+
+            // Fetch and set the replier for each reply
+            const repliesWithRepliers = await Promise.all(
+                repliesData.map(async (reply) => {
+                    const replierData = await fetch(`http://localhost:5000/users/${reply.user_id}`);
+                    const replier = await replierData.json();
+                    return { ...reply, replier: replier[0].username };
+                })
+            );
+
+            // Update replies state instead of overwriting comments state
+            setReplies(repliesWithRepliers);
+            console.log('repliesWithRepliers', repliesWithRepliers);
+            console.log('repliesData', repliesData);
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+
+    console.log('repliesFinal', replies);
+    // console.log('showreplieswithRepliers', replyingTo);
 
     return (
         <div>
-            <h1>Post with Comments</h1>
-            {post && (
+          <h1>Post with Comments</h1>
+          {post && (
+            <div>
+              <p>{post.post}</p>
+              {post.images && post.images.length > 0 && (
                 <div>
-                    <p>{post.post}</p>
+                  <h3>Attached Images:</h3>
+                  {post.images.map((image, index) => (
+                    <img key={index} src={image} alt={`Image ${index + 1}`} />
+                  ))}
                 </div>
+              )}
+            </div>
+          )}
+          Author: {username}
+    
+          {/* Like and Dislike buttons */}
+          <div>
+            {likedPosts.includes(post.id) ? (
+                <button style={{ color: "blue" }}>Liked</button>
+            ) : (
+              <button onClick={likePost}>Like</button>
             )}
-            Author: {username}
+            <span> Likes: {post.likes} </span>
 
-            {/* Like and Dislike buttons */}
-            <div>
-                <button onClick={likePost}>Like</button>
-                <span>{likes}</span>
-                <button onClick={dislikePost}>Dislike</button>
-                <span>{dislikes}</span>
-            </div>
+            {dislikedPosts.includes(post.id) ? (
+                <button style={{ color: "blue" }}>Disliked</button>
+            ) : (
+              <button onClick={dislikePost}>Dislike</button>
+            )}
+            <span>Dislikes: {post.dislikes} </span>
+          </div>
+    
+          {/* Comment section */}
+          <div>
+            <h2>Comments</h2>
+            <ul>
+              {comments.map((comment) => (
+                <li key={comment.id}>
+                  <strong>{comment.commenter}:</strong> {comment.comment}
+                  <div>
 
-            {/* Comment section */}
+                    {likedComments.includes(comment.id) ? (
+                        <button style={{ color: 'blue' }}>Liked</button>
+                    ) : (
+                        <button onClick={() => likeComment(comment.id)}>Like</button>
+                    )}
+                    <span>Likes: {comment.likes}</span>
+
+                    {dislikedComments.includes(comment.id) ? (
+                        <button style={{ color: 'blue' }}>Disliked</button>
+                    ) : (
+                        <button onClick={() => dislikeComment(comment.id)}>Dislike</button>
+                    )}
+                    <span>Dislikes: {comment.dislikes}</span>
+
+                    <button onClick={() => toggleReplies(comment.id)}>Replies</button>
+        
+        {/* Display replies if available */}
+        {showReplies && replyingTo === comment.id && (
             <div>
-                <h2>Comments</h2>
-                <ul>
-                    {comments.map(comment => (
-                        <li key={comment.id}>
-                            <strong>{comment.commenter}:</strong> {comment.comment}
-                        </li>
-                    ))}
-                </ul>
-                <textarea
-                    value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                />
-                <button onClick={postComment}>Post Comment</button>
+                {replies.map(reply => (
+                    <div key={reply.id}>
+                        <strong>{reply.replier}:</strong> {reply.reply}
+                    </div>
+                ))}
             </div>
+        )}
+
+                    {/* Render a reply text area if replyingTo matches the comment id */}
+                    {replyingTo === comment.id && showReplies && (
+                      <div>
+                        <textarea
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                        />
+                        <button onClick={postReply}>Post Reply</button>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button onClick={postComment}>Post Comment</button>
+          </div>
         </div>
-    );
-}
-
-export default Posts;
+      );
+    }
+    
+    export default Posts;

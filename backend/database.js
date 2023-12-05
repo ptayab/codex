@@ -122,17 +122,7 @@ db.connect((err) => {
     }
     });
 
-    // create admin account
-    db.query(`
-    INSERT INTO users (username, email, password, isAdmin) VALUES
-    ("admin", "admin@email.com", "admin123", true)
-`, (err) => {
-    if (err) {
-        console.log('Error inserting admin user:', err.message);
-    } else {
-        console.log('Admin user inserted');
-    }
-    });
+
 });
 
 

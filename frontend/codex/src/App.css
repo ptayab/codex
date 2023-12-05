@@ -14,3 +14,10 @@
   background-color: rgb(74, 142, 169);
 }
 
+.header {
+  background-color: #3498db;
+  height: 50px; 
+  color: #fff;
+  padding: 10px;
+}
+

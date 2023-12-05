@@ -126,9 +126,91 @@ function Channels() {
         navigate(`/posts/${postId}`);
     };
 
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/users/logout', {
+                method: 'POST',
+                credentials: 'include', // Include credentials for cross-origin requests
+            });
+    
+            if (response.ok) {
+                console.log('Logout successful!');
+                // Clear user data from local storage
+                localStorage.removeItem('accessToken');
+                console.log('User data cleared from local storage:', localStorage.getItem('user'));
+                // Redirect to the login page or any other appropriate page
+                navigate('/');
+            } else {
+                console.error('Error logging out:', response.statusText);
+                // Provide user feedback on error
+                alert('Error logging out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            // Provide user feedback on error
+            alert('Error logging out. Please try again.');
+        }
+    };
+    
+    const handleDeleteChannelClick = async () => {
+        if (!selectedChannel) {
+          console.error('No channel selected');
+          return;
+        }
+    
+        if (user.userId === 1) {
+          try {
+            const response = await fetch(`http://localhost:5000/channels/${selectedChannel.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+    
+            if (response.ok) {
+              console.log('Channel deleted successfully!');
+              // Update the list of channels after deleting the channel
+              getChannels();
+              // Clear selected channel
+              setSelectedChannel(null);
+            } else {
+              console.error('Error deleting channel:', response.statusText);
+            }
+          } catch (error) {
+            console.error('Error:', error.message);
+          }
+        } else {
+          console.error('User is not an admin. Cannot delete channel.');
+        }
+      };
+
+      const renderDeleteButton = () => {
+        // Check if the user is an admin and has userId equal to 1
+        if (user.userId === 1) {
+            return (
+                <button type="button" onClick={handleDeleteChannelClick}>
+                    Delete Channel
+                </button>
+            );
+        }
+        return null;
+    };
+    
 
 
     return (
+        <div style={{ display: "flex", flexDirection: "column" }}>
+            {/* Color block at the top */}
+            <div className="header">
+                {/* Logout button */}
+                <form onSubmit={handleLogout} style={{ float: "right" }}>
+                    <button type="submit" style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
+                        Logout
+                    </button>
+                </form>
+            </div>
+
         <div style={{ display: "flex" }}>
             {/* Left side - List of channels */}
             <div style={{ flex: 1 }}>
@@ -139,7 +221,7 @@ function Channels() {
                 <ul>
                     {channels.map((channel) => (
                         <li key={channel.id} onClick={() => handleChannelClick(channel)}>
-                            {channel.name}
+                            {channel.name} {renderDeleteButton()}
                         </li>
                     ))}
                 </ul>
@@ -198,6 +280,7 @@ function Channels() {
                 )}
             </div>
         </div>
+    </div>
     );
 }
 

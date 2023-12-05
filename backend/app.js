@@ -10,7 +10,12 @@ const commentRoutes = require('./comments');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors(
+    {
+        origin: 'http://localhost:3000',
+        credentials: true,
+    }
+));
 
 app.use('/users', userRoutes);
 app.use('/channels', channelRoutes);
