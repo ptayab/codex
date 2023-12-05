@@ -24,6 +24,7 @@ router.get('/:postId', (req, res) => {
         }
         return res.status(200).json(results[0]);
     });
+    console.log('Image data:', image);
 });
 
 router.post('/', upload.array('images', 5), (req, res) => {

@@ -137,6 +137,15 @@ function Posts() {
             {post && (
                 <div>
                     <p>{post.post}</p>
+                    {/* Display images */}
+                    {post.images && post.images.map((image, index) => (
+                        <img
+                            key={index}
+                            src={`data:image/png;base64, ${image.data}`}
+                            alt={`Image ${index + 1}`}
+                            style={{ maxWidth: '100%', maxHeight: '400px' }}
+                        />
+                    ))}
                 </div>
             )}
             Author: {username}
