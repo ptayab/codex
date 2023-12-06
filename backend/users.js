@@ -6,10 +6,33 @@ const db = require('./database');
 
 const router = express.Router();
 
-const generateAccessToken = (userId) => {
+const generateAccessToken = (userId, isAdmin) => {
     const secret = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
-    return jwt.sign({ userId }, secret, { expiresIn: '1h' });
+    return jwt.sign({ userId, isAdmin }, secret, { expiresIn: '1h' });
 };
+
+// Create Admin User
+const adminUsername = 'admin';
+const adminEmail = 'admin@email.com';
+const adminPassword = 'admin123';
+
+// Hash the admin password
+bcrypt.hash(adminPassword, 10, (hashErr, hashedPassword) => {
+    if (hashErr) {
+        console.error('Error hashing admin password:', hashErr.message);
+    } else {
+        // Insert the admin user into the database
+        db.query('INSERT INTO users (username, email, password, isAdmin) VALUES (?, ?, ?, ?)',
+            [adminUsername, adminEmail, hashedPassword, true], (insertErr, results) => {
+                if (insertErr) {
+                    console.error('Error creating admin user:', insertErr.message);
+                } else {
+                    console.log('Admin user created successfully');
+                }
+            });
+    }
+});
+
 
 // Fetch all users (admin access)
 router.get('/', (req, res) => {
@@ -101,6 +124,34 @@ router.post('/login', (req, res) => {
             const accessToken = generateAccessToken(user[0].id);
             return res.status(200).json({ message: 'Login successful', userId: user[0].id, accessToken });
         });
+    });
+});
+
+router.post('/logout', (req, res) => {
+    res.cookie('access_token', '', { maxAge: 0 });
+    return res.status(200).json({ message: 'Logout successful' });
+});
+
+router.delete('/:userId', (req, res) => {
+    const { userId } = req.params;
+    db.query('DELETE FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error deleting user:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'User deleted successfully' });
+    });
+});
+
+
+router.delete('/:userId', (req, res) => {
+    const { userId } = req.params;
+    db.query('DELETE FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            console.error('Error deleting user:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+        return res.status(200).json({ message: 'User deleted successfully' });
     });
 });
 

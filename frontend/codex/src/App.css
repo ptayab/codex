@@ -1,3 +1,5 @@
+/* app.css */
+
 .landing-container {
   display: flex;
 }
@@ -14,3 +16,142 @@
   background-color: rgb(74, 142, 169);
 }
 
+.header {
+  background-color: #3498db;
+  align-items: center;
+  justify-content: space-between;
+  height: 50px; 
+  color: #fff;
+  padding: 10px;
+}
+
+/* New styles for Channels component */
+
+.channels-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container {
+  display: flex;
+}
+
+.channels-list {
+  border-right: 1px solid #1b77b5; 
+  padding: 20px;
+  padding-right: 200px;
+}
+
+.channels-list h1,
+.posts-list h2,
+.posts-list h3 {
+  color: #000000;
+}
+
+.channels-list button,
+.channels-list button[type="button"],
+.posts-list button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  border: 1px solid #000000;
+}
+
+.channels-list .channel-item {
+  margin-bottom: 20px; /* Increase the margin to separate each channel */
+}
+
+/* Shaded box styles */
+.channels-list .button-group {
+  background-color: #ecf0f1; /* Light grey background for the shaded box */
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.posts-list {
+  flex: 2;
+  padding: 20px;
+}
+
+.posts-list textarea {
+  width: 80%;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+
+.posts-list input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.posts-list img {
+  max-width: 100px;
+  max-height: 100px;
+  margin-right: 10px;
+}
+
+.posts-list button {
+  margin-right: 10px;
+}
+
+.channels-list .channel-item {
+  margin-bottom: 20px; /* Add margin between each channel item */
+}
+
+.posts-list .post-container {
+  background-color: #ecf0f1; /* Shaded background color for the post container */
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px; /* Add margin between each post container */
+}
+
+.posts-list button {
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-item {
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #0c0606;
+}
+
+.comment-section {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #455489;
+  margin-left: 50px;
+}
+
+.comment-actions {
+  margin-top: 5px;
+}
+
+.replies {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+
+.reply-actions {
+  margin-top: 5px;
+}
+
+.reply-textarea {
+  margin-top: 10px;
+}

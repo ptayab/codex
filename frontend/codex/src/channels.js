@@ -9,6 +9,8 @@ function Channels() {
     const [postText, setPostText] = useState("");
     const [postImages, setPostImages] = useState([]);
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         getChannels();
@@ -35,6 +37,8 @@ function Channels() {
         }
     };
 
+    
+
     const getPosts = async (channelId) => {
         try {
             const response = await fetch(`http://localhost:5000/channels/${channelId}/posts`);
@@ -54,14 +58,12 @@ function Channels() {
                 console.error('Post text cannot be empty');
                 return;
             }
-
-            
     
             const formData = new FormData();
             formData.append("post", postText);
             formData.append("user_id", user.userId);
             formData.append("channel_id", selectedChannel.id);
-            
+    
             // Append each selected image file to the form data
             for (let i = 0; i < postImages.length; i++) {
                 formData.append("images", postImages[i]);
@@ -80,9 +82,13 @@ function Channels() {
                 setPostImages([]);
             } else {
                 console.error('Error creating post:', response.statusText);
+                // Provide user feedback on error
+                alert('Error creating post. Please try again.');
             }
         } catch (error) {
             console.error('Error:', error.message);
+            // Provide user feedback on error
+            alert('Error creating post. Please try again.');
         }
     };
     
@@ -124,56 +130,212 @@ function Channels() {
         navigate(`/posts/${postId}`);
     };
 
-    return (
-        <div style={{ display: "flex" }}>
-            {/* Left side - List of channels */}
-            <div style={{ flex: 1 }}>
-                <h1>Channels</h1>
-                <button type="button" onClick={handleCreateChannelClick}>
-                    Create Channel
-                </button>
-                <ul>
-                    {channels.map(channel => (
-                        <li key={channel.id} onClick={() => handleChannelClick(channel)}>
-                            {channel.name}
-                        </li>
-                    ))}
-                </ul>
-            </div>
+    const UserListClick = (userId) => {
+        
+        navigate('/userlist');
+    };
 
-            {/* Right side - List of posts */}
-            <div style={{ flex: 2 }}>
-                {/* Display selected channel's posts */}
-                {selectedChannel && (
-                    <div>
-                        <h2>{selectedChannel.name} Posts</h2>
-                        <div>
-                            <input
-                                type="text"
-                                placeholder="Enter post text"
-                                value={postText}
-                                onChange={(e) => setPostText(e.target.value)}
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={(e) => setPostImages(e.target.files)}
-                            />
-                            <button type="button" onClick={handleCreatePostClick}>Create Post</button>
-                        </div>
-                        <ul>
-                            {posts && posts.map(post => (
-                                <li key={post.id} onClick={() => handlePostClick(post.id)}>
-                                {post.post}
-                            </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
+    const searchPage = () => {
+        navigate('/search');
+    };
+
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/users/logout', {
+                method: 'POST',
+                credentials: 'include', // Include credentials for cross-origin requests
+            });
+    
+            if (response.ok) {
+                console.log('Logout successful!');
+                // Clear user data from local storage
+                localStorage.removeItem('accessToken');
+                console.log('User data cleared from local storage:', localStorage.getItem('user'));
+                // Redirect to the login page or any other appropriate page
+                navigate('/');
+            } else {
+                console.error('Error logging out:', response.statusText);
+                // Provide user feedback on error
+                alert('Error logging out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            // Provide user feedback on error
+            alert('Error logging out. Please try again.');
+        }
+    };
+    
+    const handleDeleteChannelClick = async () => {
+        if (!selectedChannel) {
+          console.error('No channel selected');
+          return;
+        }
+    
+        if (user.userId === 1) {
+          try {
+            const response = await fetch(`http://localhost:5000/channels/${selectedChannel.id}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+    
+            if (response.ok) {
+              console.log('Channel deleted successfully!');
+              // Update the list of channels after deleting the channel
+              getChannels();
+              // Clear selected channel
+              setSelectedChannel(null);
+            } else {
+              console.error('Error deleting channel:', response.statusText);
+            }
+          } catch (error) {
+            console.error('Error:', error.message);
+          }
+        } else {
+          console.error('User is not an admin. Cannot delete channel.');
+        }
+      };
+
+      const renderDeleteButton = () => {
+        // Check if the user is an admin and has userId equal to 1
+        if (user.userId === 1) {
+            return (
+                <button type="button" onClick={handleDeleteChannelClick}>
+                    Delete Channel
+                </button>
+            );
+        }
+        return null;
+    };
+    
+    const handleDeletePostClick = async (postId) => {
+        if (!selectedChannel) {
+            console.error('No channel selected');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:5000/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (response.ok) {
+                console.log('Post deleted successfully!');
+                // Update the list of posts after deleting the post
+                getPosts(selectedChannel.id);
+            } else {
+                console.error('Error deleting post:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
+
+
+
+
+    return (
+        <div className="channels-container">
+          <div className="header">
+            <form onSubmit={handleLogout}>
+              <button type="submit">Logout</button>
+            </form>
+            <button onClick={searchPage}>Search</button>
+            {user?.userId === 1 && (
+              <button onClick={() => UserListClick(user.userId)}>Userlist</button>
+            )}
+
+          </div>
+    
+      <div className="main-container">
+        <div className="channels-list">
+          <h1>Channels</h1>
+          <button type="button" onClick={handleCreateChannelClick}>
+            Create Channel
+            </button>
+          <ul>
+            {channels.map((channel) => (
+              <li key={channel.id} className="channel-item">
+                <div className="button-group">
+                  <div>{channel.name}</div>
+                  <button onClick={() => handleChannelClick(channel)}>
+                    View Channel
+                  </button>
+                    {renderDeleteButton()}
+
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
-    );
+    
+        <div className="posts-list">
+          {selectedChannel && (
+            <div>
+              <h2>{selectedChannel.name} Posts</h2>
+              <div>
+                <textarea
+                  placeholder="Enter post text"
+                  value={postText}
+                  onChange={(e) => setPostText(e.target.value)}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setPostImages(e.target.files)}
+                />
+                {postImages.length > 0 && (
+                  <div>
+                    <h3>Selected Images:</h3>
+                    <ul>
+                      {Array.from(postImages).map((image, index) => (
+                        <li key={index}>
+                          <p>{image.name}</p>
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt={`Selected Image ${index + 1}`}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <button type="button" onClick={handleCreatePostClick}>
+                  Create Post
+                </button>
+              </div>
+              <ul>
+                {posts &&
+                  posts.map((post) => (
+                    <li key={post.id} className="post-container">
+                      <div>
+                        <p>{post.post}</p>
+                        <button onClick={() => handlePostClick(post.id)}>
+                          View Post
+                        </button>
+                        {user?.userId === 1 && (
+                          <button
+                            onClick={() => handleDeletePostClick(post.id)}
+                          >
+                            Delete Post
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default Channels;
