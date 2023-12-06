@@ -11,6 +11,16 @@ const searchRoutes = require('./search');
 
 const app = express();
 
+app.get('/*', function (req, res) {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'),
+    function(err) {
+        if (err) {
+            res.status(500).send(err)
+        }
+    }    
+    );
+})
+
 app.use(bodyParser.json());
 app.use(cors(
     {
@@ -26,5 +36,5 @@ app.use('/comments', commentRoutes);
 app.use('/replies', repliesRoutes);
 app.use('/search', searchRoutes);
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
