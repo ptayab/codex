@@ -135,6 +135,10 @@ function Channels() {
         navigate('/userlist');
     };
 
+    const searchPage = () => {
+        navigate('/search');
+    };
+
     const handleLogout = async (e) => {
         e.preventDefault();
         try {
@@ -232,16 +236,7 @@ function Channels() {
         }
     };
 
-    const handleSearch = () => {
-        // Perform the search based on the searchQuery
-        // You can customize this logic based on your backend API and data structure
 
-        const filteredPosts = posts.filter((post) =>
-          post.post.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    
-        setSearchResults(filteredPosts);
-      };
 
 
     return (
@@ -250,24 +245,16 @@ function Channels() {
             <form onSubmit={handleLogout}>
               <button type="submit">Logout</button>
             </form>
+            <button onClick={searchPage}>Search</button>
             {user?.userId === 1 && (
               <button onClick={() => UserListClick(user.userId)}>Userlist</button>
             )}
+
           </div>
     
       <div className="main-container">
         <div className="channels-list">
           <h1>Channels</h1>
-                    {/* Search bar */}
-                    <input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-          <button type="button" onClick={handleSearch}>
-            Search
-          </button>
           <button type="button" onClick={handleCreateChannelClick}>
             Create Channel
             </button>

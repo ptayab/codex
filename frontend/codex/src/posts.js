@@ -536,7 +536,9 @@ function Posts() {
         navigate('/userlist');
     };
   
-
+    const searchPage = () => {
+        navigate('/search');
+    };
 
     return (
         
@@ -545,6 +547,7 @@ function Posts() {
             <form onSubmit={handleLogout}>
               <button type="submit">Logout</button>
             </form>
+            <button onClick={searchPage}>Search</button>
             {user?.userId === 1 && (
               <button onClick={() => UserListClick(user.userId)}>Userlist</button>
             )}
