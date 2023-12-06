@@ -1,0 +1,33 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: C:\Users\jtaya\Desktop\CMPT353\Project\codex\backend  
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+    env_file:
+      - C:\Users\jtaya\Desktop\CMPT353\Project\codex\backend\.env
+
+  frontend:
+    build:
+      context: C:\Users\jtaya\Desktop\CMPT353\Project\codex\frontend\codex
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=http://backend:5000
+
+  database:
+    image: mysql:latest
+    env_file:
+      - C:\Users\jtaya\Desktop\CMPT353\Project\codex\backend\.env
+    ports:
+      - "3306:3306"
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10

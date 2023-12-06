@@ -1,12 +1,19 @@
 const express = require('express');
 const mysql = require('mysql2');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const db = mysql.createConnection({
-    host: 'localhost',
-    user: "root",
-    port: 3306,
-    password: "Princess123",
+    // host: 'localhost',
+    // user: "root",
+    // port: 3306,
+    // password: "Princess123",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    port: process.env.DB_PORT,
+    password: process.env.DB_PASSWORD,
 });
+
 
 db.connect((err) => {
     if (err) {

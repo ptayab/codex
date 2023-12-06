@@ -25,27 +25,28 @@
   padding: 10px;
 }
 
-/* New styles for Channels component */
 
 .channels-container {
   display: flex;
   flex-direction: column;
+  width: 100%; /* Make the container full-width */
 }
 
 .main-container {
   display: flex;
+  flex-direction: column; /* Stack main content vertically on smaller screens */
 }
 
 .channels-list {
-  border-right: 1px solid #1b77b5; 
+  border-bottom: 1px solid #1b77b5; /* Change border to bottom border for separation */
   padding: 20px;
-  padding-right: 200px;
 }
 
 .channels-list h1,
 .posts-list h2,
 .posts-list h3 {
   color: #000000;
+  font-size: 20px; /* Increase font size for better readability */
 }
 
 .channels-list button,
@@ -58,10 +59,11 @@
   cursor: pointer;
   margin-top: 10px;
   border: 1px solid #000000;
+  font-size: 16px; /* Increase font size for better touch interaction */
 }
 
 .channels-list .channel-item {
-  margin-bottom: 20px; /* Increase the margin to separate each channel */
+  margin-bottom: 10px; /* Reduce margin between each channel for better spacing */
 }
 
 /* Shaded box styles */
@@ -69,55 +71,46 @@
   background-color: #ecf0f1; /* Light grey background for the shaded box */
   padding: 10px;
   border-radius: 8px;
+  margin-bottom: 20px; /* Increase margin for better separation */
 }
 
 .posts-list {
-  flex: 2;
   padding: 20px;
 }
 
 .posts-list textarea {
-  width: 80%;
+  width: 100%; /* Make textarea full-width */
   min-height: 100px;
   resize: vertical;
   margin-bottom: 10px;
+  font-size: 16px; /* Increase font size for better touch interaction */
 }
 
-
 .posts-list input[type="file"] {
+  width: 100%; /* Make file input full-width */
   margin-bottom: 10px;
 }
 
 .posts-list img {
-  max-width: 100px;
-  max-height: 100px;
-  margin-right: 10px;
+  max-width: 100%; /* Make images responsive */
+  height: auto;
+  margin-bottom: 10px;
 }
 
 .posts-list button {
-  margin-right: 10px;
-}
-
-.channels-list .channel-item {
-  margin-bottom: 20px; /* Add margin between each channel item */
+  margin-right: 0; /* Remove right margin for better spacing */
 }
 
 .posts-list .post-container {
-  background-color: #ecf0f1; /* Shaded background color for the post container */
+  background-color: #ecf0f1;
   padding: 15px;
   border-radius: 8px;
-  margin-bottom: 20px; /* Add margin between each post container */
+  margin-bottom: 20px;
 }
 
 .posts-list button {
-  background-color: #3498db;
-  color: #fff;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  margin-top: 10px;
+  font-size: 16px; /* Increase font size for better touch interaction */
 }
-
 
 .comment-list {
   list-style: none;
@@ -128,13 +121,14 @@
   margin-bottom: 10px;
   padding: 10px;
   border: 1px solid #0c0606;
+  border-radius: 8px;
 }
 
 .comment-section {
   margin-top: 10px;
   padding: 10px;
   border: 1px solid #455489;
-  margin-left: 50px;
+  margin-left: 0; /* Remove left margin for better alignment */
 }
 
 .comment-actions {
@@ -145,8 +139,8 @@
   margin-top: 10px;
   padding: 10px;
   border: 1px solid #ddd;
+  border-radius: 8px;
 }
-
 
 .reply-actions {
   margin-top: 5px;
@@ -154,4 +148,5 @@
 
 .reply-textarea {
   margin-top: 10px;
+  width: 100%; /* Make reply textarea full-width */
 }
