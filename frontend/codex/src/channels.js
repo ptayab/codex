@@ -126,6 +126,11 @@ function Channels() {
         navigate(`/posts/${postId}`);
     };
 
+    const UserListClick = (userId) => {
+        
+        navigate('/userlist');
+    };
+
     const handleLogout = async (e) => {
         e.preventDefault();
         try {
@@ -229,11 +234,17 @@ function Channels() {
             {/* Color block at the top */}
             <div className="header">
                 {/* Logout button */}
+
                 <form onSubmit={handleLogout} style={{ float: "right" }}>
                     <button type="submit" style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
                         Logout
                     </button>
                 </form>
+                {user?.userId === 1 && (
+                    <button onClick={() => UserListClick(user.userId)} style={{ float: "right", marginRight: "10px" }}>
+                        Userlist
+                    </button>
+                )}
             </div>
 
         <div style={{ display: "flex" }}>
