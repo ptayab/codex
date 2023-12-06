@@ -230,104 +230,99 @@ function Channels() {
 
 
     return (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-            {/* Color block at the top */}
-            <div className="header">
-                {/* Logout button */}
-
-                <form onSubmit={handleLogout} style={{ float: "right" }}>
-                    <button type="submit" style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
-                        Logout
-                    </button>
-                </form>
-                {user?.userId === 1 && (
-                    <button onClick={() => UserListClick(user.userId)} style={{ float: "right", marginRight: "10px" }}>
-                        Userlist
-                    </button>
-                )}
-            </div>
-
-        <div style={{ display: "flex" }}>
-            {/* Left side - List of channels */}
-            <div style={{ flex: 1 }}>
-                <h1>Channels</h1>
-                <button type="button" onClick={handleCreateChannelClick}>
-                    Create Channel
-                </button>
-                <ul>
-                    {channels.map((channel) => (
-                        <li key={channel.id} onClick={() => handleChannelClick(channel)}>
-                            {channel.name} {renderDeleteButton()}
-                        </li>
-                    ))}
-                </ul>
-            </div>
-
-            {/* Right side - List of posts */}
-            <div style={{ flex: 2 }}>
-                {/* Display selected channel's posts */}
-                {selectedChannel && (
-                    <div>
-                        <h2>{selectedChannel.name} Posts</h2>
-                        <div>
-                            <textarea
-                                placeholder="Enter post text"
-                                value={postText}
-                                onChange={(e) => setPostText(e.target.value)}
-                                style={{ width: "80%", minHeight: "100px", resize: "vertical" }} // Adjust the size as needed
-                            />
-                            <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={(e) => setPostImages(e.target.files)}
-                            />
-                            {/* Display selected images */}
-                            {postImages.length > 0 && (
-                                <div>
-                                    <h3>Selected Images:</h3>
-                                    <ul>
-                                        {Array.from(postImages).map((image, index) => (
-                                            <li key={index}>
-                                                <p>{image.name}</p>
-                                                <img
-                                                    src={URL.createObjectURL(image)}
-                                                    alt={`Selected Image ${index + 1}`}
-                                                    style={{ maxWidth: "100px", maxHeight: "100px", marginRight: "10px" }}
-                                                />
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-                            <button type="button" onClick={handleCreatePostClick}>
-                                Create Post
-                            </button>
-                        </div>
-                        <ul>
-                            {posts &&
-                                posts.map((post) => (
-                                    
-                                    <li key={post.id}>
-                                    <div>
-                                        <p>{post.post}</p>
-                                        {/* Button to handle viewing the post */}
-                                        <button onClick={() => handlePostClick(post.id)}>View Post</button>
-                                        
-                                        {/* Button to handle deleting the post (visible only for admin) */}
-                                        {user?.userId === 1 && (
-                                            <button onClick={() => handleDeletePostClick(post.id)}>Delete Post</button>
-                                        )}
-                                    </div>
-                                    </li>
-                                ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
+        <div className="channels-container">
+          <div className="header">
+            <form onSubmit={handleLogout}>
+              <button type="submit">Logout</button>
+            </form>
+            {user?.userId === 1 && (
+              <button onClick={() => UserListClick(user.userId)}>Userlist</button>
+            )}
+          </div>
+    
+      <div className="main-container">
+        <div className="channels-list">
+          <h1>Channels</h1>
+          <button type="button" onClick={handleCreateChannelClick}>
+            Create Channel
+          </button>
+          <ul>
+            {channels.map((channel) => (
+              <li key={channel.id} className="channel-item">
+                <div className="button-group">
+                  <div>{channel.name}</div>
+                  <button onClick={() => handleChannelClick(channel)}>
+                    View Channel
+                  </button>
+                    {renderDeleteButton()}
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
+    
+        <div className="posts-list">
+          {selectedChannel && (
+            <div>
+              <h2>{selectedChannel.name} Posts</h2>
+              <div>
+                <textarea
+                  placeholder="Enter post text"
+                  value={postText}
+                  onChange={(e) => setPostText(e.target.value)}
+                />
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => setPostImages(e.target.files)}
+                />
+                {postImages.length > 0 && (
+                  <div>
+                    <h3>Selected Images:</h3>
+                    <ul>
+                      {Array.from(postImages).map((image, index) => (
+                        <li key={index}>
+                          <p>{image.name}</p>
+                          <img
+                            src={URL.createObjectURL(image)}
+                            alt={`Selected Image ${index + 1}`}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <button type="button" onClick={handleCreatePostClick}>
+                  Create Post
+                </button>
+              </div>
+              <ul>
+                {posts &&
+                  posts.map((post) => (
+                    <li key={post.id} className="post-container">
+                      <div>
+                        <p>{post.post}</p>
+                        <button onClick={() => handlePostClick(post.id)}>
+                          View Post
+                        </button>
+                        {user?.userId === 1 && (
+                          <button
+                            onClick={() => handleDeletePostClick(post.id)}
+                          >
+                            Delete Post
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
-    );
+  );
 }
 
 export default Channels;

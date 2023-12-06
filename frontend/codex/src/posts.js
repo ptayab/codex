@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Posts() {
+    const navigate = useNavigate();
     const { postId } = useParams();
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
@@ -77,6 +80,32 @@ function Posts() {
     }, [post]);
 
 
+    const handleLogout = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch('http://localhost:5000/users/logout', {
+                method: 'POST',
+                credentials: 'include', // Include credentials for cross-origin requests
+            });
+    
+            if (response.ok) {
+                console.log('Logout successful!');
+                // Clear user data from local storage
+                localStorage.removeItem('accessToken');
+                console.log('User data cleared from local storage:', localStorage.getItem('user'));
+                // Redirect to the login page or any other appropriate page
+                navigate('/');
+            } else {
+                console.error('Error logging out:', response.statusText);
+                // Provide user feedback on error
+                alert('Error logging out. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+            // Provide user feedback on error
+            alert('Error logging out. Please try again.');
+        }
+    };
     
 
     const getUsername = async (userId) => {
@@ -501,139 +530,140 @@ function Posts() {
             console.error(error.message);
         }
     };
+    
+    const UserListClick = (userId) => {
+        
+        navigate('/userlist');
+    };
   
 
 
     return (
-        <div>
-          <h1>Post with Comments</h1>
-          {post && (
-            <div>
-              <p>{post.post}</p>
-              {post.images && post.images.length > 0 && (
-                <div>
-                  <h3>Attached Images:</h3>
-                  {post.images.map((image, index) => (
-                    <img key={index} src={image} alt={`Image ${index + 1}`} />
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-          Author: {username}
-    
-          {/* Like and Dislike buttons */}
-          <div>
-  {likedPosts.includes(post?.id) ? (
-    <button style={{ color: 'blue' }}>
-      👍 Liked
-    </button>
-  ) : (
-    <button onClick={likePost}>
-      👍 Like
-    </button>
-  )}
-  <span>Likes: {post?.likes || 0} </span>
-
-  {dislikedPosts.includes(post?.id) ? (
-    <button style={{ color: 'blue' }}>
-      👎 Disliked
-    </button>
-  ) : (
-    <button onClick={dislikePost}>
-      👎 Dislike
-    </button>
-  )}
-  <span>Dislikes: {post?.dislikes || 0} </span>
-  
-</div>
-
-    
-          {/* Comment section */}
-          <div>
-            <h2>Comments</h2>
-            <ul>
-              {comments.map((comment) => (
-                <li key={comment.id}>
-                  <strong>{comment.commenter}:</strong> {comment.comment}
-                  <div>
-
-                    {likedComments.includes(comment.id) ? (
-                        <button style={{ color: 'blue' }}>👍 Liked</button>
-                    ) : (
-                        <button onClick={() => likeComment(comment.id)}>👍Like</button>
-                    )}
-                    <span>Likes: {comment.likes}</span>
-
-                    {dislikedComments.includes(comment.id) ? (
-                        <button style={{ color: 'blue' }}>👎 Disliked</button>
-                    ) : (
-                        <button onClick={() => dislikeComment(comment.id)}>👎 Dislike</button>
-                    )}
-                    <span>Dislikes: {comment.dislikes}</span>
-
-                    <button onClick={() => toggleReplies(comment.id)}>Replies</button>
-                    {user?.userId === 1 && (
-                    <button onClick={() => deleteComment(comment.id)}>Delete Comment</button>
-                    )}
-                    
         
-        {/* Display replies if available */}
-        {showReplies && replyingTo === comment.id && (
-    <div>
-        {replies.map(reply => (
-            !reply.hidden && (
-                <div key={reply.id}>
-                    <strong>{reply.replier}:</strong> {reply.reply}
-                    <div>
-                        {likedReplies.includes(reply.id) ? (
-                            <button style={{ color: 'blue' }}>👍 Liked</button>
-                        ) : (
-                            <button onClick={() => likeReply(reply.id)}>👍 Like</button>
-                        )}
-                        <span>Likes: {reply.likes}</span>
+        <div className="posts-container">
+                   <div className="header">
+            <form onSubmit={handleLogout}>
+              <button type="submit">Logout</button>
+            </form>
+            {user?.userId === 1 && (
+              <button onClick={() => UserListClick(user.userId)}>Userlist</button>
+            )}
+          </div>
+          <div className="main-container">
+            {post && (
+              <div className="post-content">
+                <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>{post.post}</h1>
+                {post.images && post.images.length > 0 && (
+                  <div className="attached-images">
+                    <h3>Attached Images:</h3>
+                    {post.images.map((image, index) => (
+                      <img key={index} src={image} alt={`Image ${index + 1}`} />
+                    ))}
+                  </div>
+                )}
+                <div className="post-author">
+                  Author: {username}
+                </div>
+                {/* Like and Dislike buttons */}
+                <div className="like-dislike-section">
+                  {/* Like button */}
+                  <button onClick={likePost} className={likedPosts.includes(post?.id) ? "liked" : ""}>
+                    👍 Like
+                  </button>
+                  <span>Likes: {post?.likes || 0}</span>
+      
+                  {/* Dislike button */}
+                  <button onClick={dislikePost} className={dislikedPosts.includes(post?.id) ? "disliked" : ""}>
+                    👎 Dislike
+                  </button>
+                  <span>Dislikes: {post?.dislikes || 0}</span>
+                </div>
+              </div>
+            )}
 
-                        {dislikedReplies.includes(reply.id) ? (
-                            <button style={{ color: 'blue' }}>👎 Disliked</button>
-                        ) : (
-                            <button onClick={() => dislikeReply(reply.id)}>👎 Dislike</button>
-                        )}
-                        <span>Dislikes: {reply.dislikes}</span>
+                {/* Comment section */}
+                <div className="comment-section">
+                    <h2>Comments</h2>
+                    <ul className="comment-list">
+                        {comments.map((comment) => (
+                            <li key={comment.id} className="comment-item">
+                                <strong>{comment.commenter}:</strong> {comment.comment}
+                                <div className="comment-actions">
+                                    {/* Like and dislike buttons for comments */}
+                                    <button onClick={() => likeComment(comment.id)} className={likedComments.includes(comment.id) ? "liked" : ""}>
+                                        👍 Like
+                                    </button>
+                                    <span>Likes: {comment.likes}</span>
 
-                        {/* Show delete button if user ID is 1 */}
-                        {user?.userId === 1 && (
-                            <button onClick={() => deleteReply(reply.id)}>Delete</button>
-                        )}
+                                    <button onClick={() => dislikeComment(comment.id)} className={dislikedComments.includes(comment.id) ? "disliked" : ""}>
+                                        👎 Dislike
+                                    </button>
+                                    <span>Dislikes: {comment.dislikes}</span>
+
+                                    {/* Toggle replies button */}
+                                    <button onClick={() => toggleReplies(comment.id)}>Replies</button>
+
+                                    {/* Delete comment button */}
+                                    {user?.userId === 1 && (
+                                        <button onClick={() => deleteComment(comment.id)}>Delete Comment</button>
+                                    )}
+
+                                    {/* Display replies if available */}
+                                    {showReplies && replyingTo === comment.id && (
+                                        <div className="replies">
+                                            {replies.map(reply => (
+                                                !reply.hidden && (
+                                                    <div key={reply.id} className="reply-item">
+                                                        <strong>{reply.replier}:</strong> {reply.reply}
+                                                        <div className="reply-actions">
+                                                            {/* Like and dislike buttons for replies */}
+                                                            <button onClick={() => likeReply(reply.id)} className={likedReplies.includes(reply.id) ? "liked" : ""}>
+                                                                👍 Like
+                                                            </button>
+                                                            <span>Likes: {reply.likes}</span>
+
+                                                            <button onClick={() => dislikeReply(reply.id)} className={dislikedReplies.includes(reply.id) ? "disliked" : ""}>
+                                                                👎 Dislike
+                                                            </button>
+                                                            <span>Dislikes: {reply.dislikes}</span>
+
+                                                            {/* Delete reply button */}
+                                                            {user?.userId === 1 && (
+                                                                <button onClick={() => deleteReply(reply.id)}>Delete</button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Render a reply text area if replyingTo matches the comment id */}
+                                    {replyingTo === comment.id && showReplies && (
+                                        <div className="reply-textarea">
+                                            <textarea
+                                                value={replyText}
+                                                onChange={(e) => setReplyText(e.target.value)}
+                                            />
+                                            <button onClick={postReply}>Post Reply</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+                    {/* Text area for posting a new comment */}
+                    <div className="new-comment-section">
+                        <textarea
+                            value={commentText}
+                            onChange={(e) => setCommentText(e.target.value)}
+                        />
+                        <button onClick={postComment}>Post Comment</button>
                     </div>
                 </div>
-            )
-        ))}
-    </div>
-)}
-
-
-                    {/* Render a reply text area if replyingTo matches the comment id */}
-                    {replyingTo === comment.id && showReplies && (
-                      <div>
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                        />
-                        <button onClick={postReply}>Post Reply</button>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-            />
-            <button onClick={postComment}>Post Comment</button>
-          </div>
+            </div>
         </div>
-      );
-    }
-    
-    export default Posts;
+    );
+}
+
+export default Posts;
