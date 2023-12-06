@@ -197,6 +197,31 @@ function Channels() {
         return null;
     };
     
+    const handleDeletePostClick = async (postId) => {
+        if (!selectedChannel) {
+            console.error('No channel selected');
+            return;
+        }
+    
+        try {
+            const response = await fetch(`http://localhost:5000/posts/${postId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if (response.ok) {
+                console.log('Post deleted successfully!');
+                // Update the list of posts after deleting the post
+                getPosts(selectedChannel.id);
+            } else {
+                console.error('Error deleting post:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Error:', error.message);
+        }
+    };
 
 
     return (
@@ -271,8 +296,18 @@ function Channels() {
                         <ul>
                             {posts &&
                                 posts.map((post) => (
-                                    <li key={post.id} onClick={() => handlePostClick(post.id)}>
+                                    
+                                    <li key={post.id}>
+                                    <div>
                                         <p>{post.post}</p>
+                                        {/* Button to handle viewing the post */}
+                                        <button onClick={() => handlePostClick(post.id)}>View Post</button>
+                                        
+                                        {/* Button to handle deleting the post (visible only for admin) */}
+                                        {user?.userId === 1 && (
+                                            <button onClick={() => handleDeletePostClick(post.id)}>Delete Post</button>
+                                        )}
+                                    </div>
                                     </li>
                                 ))}
                         </ul>

@@ -72,8 +72,8 @@ db.connect((err) => {
         images JSON,
         likes int DEFAULT 0,
         dislikes int DEFAULT 0,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (channel_id) REFERENCES channels(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -93,8 +93,8 @@ db.connect((err) => {
         dislikes int DEFAULT 0,
         user_id int NOT NULL,
         post_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (post_id) REFERENCES posts(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -113,8 +113,8 @@ db.connect((err) => {
         dislikes int DEFAULT 0,
         user_id int NOT NULL,
         comment_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (comment_id) REFERENCES comments(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -131,8 +131,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         comment_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (comment_id) REFERENCES comments(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -148,8 +148,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         post_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (post_id) REFERENCES posts(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -165,8 +165,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         reply_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (reply_id) REFERENCES replies(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (reply_id) REFERENCES replies(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -182,8 +182,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         reply_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (reply_id) REFERENCES replies(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (reply_id) REFERENCES replies(id) ON DELETE CASCADE
     )
 `, (err) => {  
     if (err) {
@@ -199,8 +199,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         post_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (post_id) REFERENCES posts(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {
@@ -217,8 +217,8 @@ db.connect((err) => {
         id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
         user_id int NOT NULL,
         comment_id int NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (comment_id) REFERENCES comments(id)
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (comment_id) REFERENCES comments(id) ON DELETE CASCADE
     )
 `, (err) => {
     if (err) {

@@ -454,6 +454,54 @@ function Posts() {
         }
     };
 
+    const deleteReply = async (replyId) => {
+        try {
+        const response = await fetch(`http://localhost:5000/replies/${replyId}`, {
+            method: 'DELETE',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+            user_id: user.userId,
+            }),
+        });
+    
+        if (response.ok) {
+            // If the deletion is successful, refresh the comments after deleting the reply
+            getComments(post.id);
+ 
+            getReplies(replyingTo);
+        } else {
+            console.error('Failed to delete reply');
+        }
+        } catch (error) {
+        console.error(error.message);
+        }
+    };
+
+    const deleteComment = async (commentId) => {
+        try {
+            const response = await fetch(`http://localhost:5000/comments/${commentId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user.userId,
+                }),
+            });
+
+            if (response.ok) {
+                // If the deletion is successful, refresh the comments after deleting the comment
+                getComments(post.id);
+            } else {
+                console.error('Failed to delete comment');
+            }
+        } catch (error) {
+            console.error(error.message);
+        }
+    };
+  
 
 
     return (
@@ -497,6 +545,7 @@ function Posts() {
     </button>
   )}
   <span>Dislikes: {post?.dislikes || 0} </span>
+  
 </div>
 
     
@@ -524,32 +573,44 @@ function Posts() {
                     <span>Dislikes: {comment.dislikes}</span>
 
                     <button onClick={() => toggleReplies(comment.id)}>Replies</button>
+                    {user?.userId === 1 && (
+                    <button onClick={() => deleteComment(comment.id)}>Delete Comment</button>
+                    )}
+                    
         
         {/* Display replies if available */}
         {showReplies && replyingTo === comment.id && (
-            <div>
-                {replies.map(reply => (
-                    <div key={reply.id}>
-                        <strong>{reply.replier}:</strong> {reply.reply}
-                        <div>
-                            {likedReplies.includes(reply.id) ? (
-                                <button style={{ color: 'blue' }}>👍 Liked</button>
-                            ) : (
-                                <button onClick={() => likeReply(reply.id)}>👍 Like</button>
-                            )}
-                            <span>Likes: {reply.likes}</span>
+    <div>
+        {replies.map(reply => (
+            !reply.hidden && (
+                <div key={reply.id}>
+                    <strong>{reply.replier}:</strong> {reply.reply}
+                    <div>
+                        {likedReplies.includes(reply.id) ? (
+                            <button style={{ color: 'blue' }}>👍 Liked</button>
+                        ) : (
+                            <button onClick={() => likeReply(reply.id)}>👍 Like</button>
+                        )}
+                        <span>Likes: {reply.likes}</span>
 
-                            {dislikedReplies.includes(reply.id) ? (
-                                <button style={{ color: 'blue' }}>👎 Disliked</button>
-                            ) : (
-                                <button onClick={() => dislikeReply(reply.id)}>👎 Dislike</button>
-                            )}
-                            <span>Dislikes: {reply.dislikes}</span>
-                            </div>
+                        {dislikedReplies.includes(reply.id) ? (
+                            <button style={{ color: 'blue' }}>👎 Disliked</button>
+                        ) : (
+                            <button onClick={() => dislikeReply(reply.id)}>👎 Dislike</button>
+                        )}
+                        <span>Dislikes: {reply.dislikes}</span>
+
+                        {/* Show delete button if user ID is 1 */}
+                        {user?.userId === 1 && (
+                            <button onClick={() => deleteReply(reply.id)}>Delete</button>
+                        )}
                     </div>
-                ))}
-            </div>
-        )}
+                </div>
+            )
+        ))}
+    </div>
+)}
+
 
                     {/* Render a reply text area if replyingTo matches the comment id */}
                     {replyingTo === comment.id && showReplies && (
