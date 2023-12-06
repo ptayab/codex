@@ -9,6 +9,8 @@ function Channels() {
     const [postText, setPostText] = useState("");
     const [postImages, setPostImages] = useState([]);
     const navigate = useNavigate();
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
 
     useEffect(() => {
         getChannels();
@@ -34,6 +36,8 @@ function Channels() {
             console.error(error.message);
         }
     };
+
+    
 
     const getPosts = async (channelId) => {
         try {
@@ -228,6 +232,17 @@ function Channels() {
         }
     };
 
+    const handleSearch = () => {
+        // Perform the search based on the searchQuery
+        // You can customize this logic based on your backend API and data structure
+
+        const filteredPosts = posts.filter((post) =>
+          post.post.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    
+        setSearchResults(filteredPosts);
+      };
+
 
     return (
         <div className="channels-container">
@@ -243,9 +258,19 @@ function Channels() {
       <div className="main-container">
         <div className="channels-list">
           <h1>Channels</h1>
+                    {/* Search bar */}
+                    <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <button type="button" onClick={handleSearch}>
+            Search
+          </button>
           <button type="button" onClick={handleCreateChannelClick}>
             Create Channel
-          </button>
+            </button>
           <ul>
             {channels.map((channel) => (
               <li key={channel.id} className="channel-item">
@@ -255,6 +280,7 @@ function Channels() {
                     View Channel
                   </button>
                     {renderDeleteButton()}
+
                 </div>
               </li>
             ))}

@@ -57,6 +57,7 @@
   padding: 10px;
   cursor: pointer;
   margin-top: 10px;
+  border: 1px solid #000000;
 }
 
 .channels-list .channel-item {
