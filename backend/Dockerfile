@@ -6,7 +6,6 @@ COPY package*.json ./
 
 # install dependencies
 RUN npm install
-RUN -init -y
 RUN npm install mysql2
 RUN npm install express
 RUN npm install cors

@@ -9,7 +9,7 @@ function SearchResults({ results }) {
           <li key={result.id}>
             <strong>{result.type}: </strong>
             {result.username || result.name || result.post || result.comment || result.reply}
-            <div>created by: {result.username} </div></li>
+            </li>
         ))}
       </ul>
     </div>
