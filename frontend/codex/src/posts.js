@@ -92,6 +92,7 @@ function Posts() {
                 console.log('Logout successful!');
                 // Clear user data from local storage
                 localStorage.removeItem('accessToken');
+                localStorage.removeItem('user')
                 console.log('User data cleared from local storage:', localStorage.getItem('user'));
                 // Redirect to the login page or any other appropriate page
                 navigate('/');
@@ -521,7 +522,7 @@ function Posts() {
             });
 
             if (response.ok) {
-                // If the deletion is successful, refresh the comments after deleting the comment
+                
                 getComments(post.id);
             } else {
                 console.error('Failed to delete comment');
@@ -586,7 +587,7 @@ function Posts() {
 
                 {/* Comment section */}
                 <div className="comment-section">
-                    <h2>Comments</h2>
+                    <h2>Replies</h2>
                     <ul className="comment-list">
                         {comments.map((comment) => (
                             <li key={comment.id} className="comment-item">
@@ -604,11 +605,11 @@ function Posts() {
                                     <span>Dislikes: {comment.dislikes}</span>
 
                                     {/* Toggle replies button */}
-                                    <button onClick={() => toggleReplies(comment.id)}>Replies</button>
+                                    <button onClick={() => toggleReplies(comment.id)}>More Replies</button>
 
                                     {/* Delete comment button */}
                                     {user?.userId === 1 && (
-                                        <button onClick={() => deleteComment(comment.id)}>Delete Comment</button>
+                                        <button onClick={() => deleteComment(comment.id)}>Delete </button>
                                     )}
 
                                     {/* Display replies if available */}
@@ -661,7 +662,7 @@ function Posts() {
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                         />
-                        <button onClick={postComment}>Post Comment</button>
+                        <button onClick={postComment}>Post Reply</button>
                     </div>
                 </div>
             </div>

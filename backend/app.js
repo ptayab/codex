@@ -11,15 +11,15 @@ const searchRoutes = require('./search');
 
 const app = express();
 
-app.get('/*', function (req, res) {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'),
-    function(err) {
-        if (err) {
-            res.status(500).send(err)
-        }
-    }    
-    );
-})
+// app.get('/*', function (req, res) {
+//     res.sendFile(path.join(__dirname, 'build', 'index.html'),
+//     function(err) {
+//         if (err) {
+//             res.status(500).send(err)
+//         }
+//     }    
+//     );
+// })
 
 app.use(bodyParser.json());
 app.use(cors(
