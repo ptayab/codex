@@ -14,7 +14,7 @@ backend:
 cd existing_repo
 cd ./backend
 npm install
-npm start
+node app.js
 ```
 
 Frontend:
