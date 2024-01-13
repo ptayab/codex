@@ -2,7 +2,7 @@
 
 Welcome to Codex, a collaborative hub designed for students to engage in discussions and share ideas through various channels.
 
-6. ## Getting started
+## Getting started
 ```
 cd repo_folder
 git clone https://github.com/ptayab/codex.git
