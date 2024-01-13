@@ -2,15 +2,29 @@
 
 Welcome to Codex, a collaborative hub designed for students to engage in discussions and share ideas through various channels.
 
-## Getting Started
+6. ## Getting started
+```
+cd repo_folder
+git clone https://github.com/ptayab/codex.git
+```
 
-To get started with Codex, follow these simple steps:
+## Running the Project
+backend:
+```
+cd existing_repo
+cd ./backend
+npm install
+npm start
+```
 
-1. Open your terminal.
-2. Navigate to the frontend directory by using the following command: cd ./frontend/codex
-3. Start the frontend application using npm: npm start
-4. Navigate to the backend directory: cd ./backend
-5. Start the backend server by running the following command: node app.js
+Frontend:
+```
+*open a second terminal
+cd existing_repo
+cd ./frontend/codex
+npm install
+npm start
+```
 
 Now, Codex is up and running, and you can begin exploring and participating in discussions. Feel free to share your thoughts and collaborate with fellow students through the different channels available.
 
